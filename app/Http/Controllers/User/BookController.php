@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\Genre;
 use Illuminate\Http\Request;
+use App\Models\Genre;
+use App\Http\Requests\StoreBookRequest;
+use App\Models\Author;
+use App\Models\Book;
+
 
 class BookController extends Controller
 {
@@ -15,7 +19,10 @@ class BookController extends Controller
      */
     public function index()
     {
-        //
+        
+        $books = auth()->user()->books()->get();
+
+        return view('user.books.index', compact('books'));
     }
 
     /**
@@ -35,9 +42,20 @@ class BookController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreBookRequest $request)
     {
-        //
+     $book = auth()->user()->books()->create($request->validated());
+     
+     $book->genres()->attach($request->input('genres'));
+
+     $authors = explode(",", $request->input('authors'));
+        foreach ($authors as $authorName) {
+            $author = Author::updateOrCreate(['name' => $authorName]);
+            $book->authors()->attach($author->id);
+        }
+
+        return redirect()->route('user.books.index')
+            ->with('message', 'Book created successfully');
     }
 
     /**

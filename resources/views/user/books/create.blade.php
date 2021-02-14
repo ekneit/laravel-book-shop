@@ -5,6 +5,9 @@
         </h2>
     </x-slot>
 
+        
+    <x-auth-validation-errors class="mb-4" :errors="$errors" />
+    
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -29,7 +32,9 @@
                             <x-label for="genres" :value="__('Genres*')"/>
 
                             @foreach ($genres as $genre)
-                                <input type="checkbox" name="genres[]" value="{{ $genre->id }}" />
+                                <input type="checkbox" name="genres[]" value="{{ $genre->id }}"
+                                @if (in_array($genre->id, old('genres', []))) checked @endif
+                                 />
                                 {{ $genre->name }}
                                 <br />
                             @endforeach
@@ -48,6 +53,7 @@
                             <x-input id="price" class="block mt-1 w-full"
                                      type="number"
                                      name="price"
+                                     value="{{ old('price') }}  "
                                      required />
                         </div>
 
